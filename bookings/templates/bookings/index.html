@@ -1,0 +1,10 @@
+{% if latest_reservation_list %}
+    <ul>
+    {% for reservation in latest_reservation_list %}
+        <li><a href="/bookings/reservations/{{ reservation.id }}/">{{ reservation.member.full_name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+{% else %}
+    <p>No reservations available.</p>
+{% endif %}
