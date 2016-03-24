@@ -1,0 +1,15 @@
+<ul>
+    {% for each_day in date_list %}
+    <li><a href="{% url 'reservation_day_archive' each_day|date:"Y" each_day|date:"b" each_day|date:"d" %}">{{ each_day }}</a></li>
+    {% endfor %}
+</ul>
+
+<p>
+    {% if previous_month %}
+    Previous Month: {{ previous_month|date:"F Y" }}
+    {% endif %}
+    {% if next_month %}
+    Next Month: {{ next_month|date:"F Y" }}
+    {% endif %}
+</p>
+

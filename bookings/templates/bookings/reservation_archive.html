@@ -1,0 +1,8 @@
+<h1>All years with Reservations</h1>
+<ul>
+    {% for each_year in date_list %}
+    <li>
+    <a href="{% url 'reservation_year_archive' each_year|date:"Y" %}">{{ each_year|date:"Y" }}</a>
+    </li>
+    {% endfor %}
+</ul>

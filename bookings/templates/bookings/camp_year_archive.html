@@ -1,0 +1,13 @@
+<h2>{{ camp }} reservations in {{ year|date:"Y" }}</h2>
+<ul>
+    {% for booked_month in date_list %}
+        <li>
+        <a href="{% url 'camp_month_archive' camp booked_month|date:"Y" booked_month|date:"m" %}">
+            {{ booked_month|date:"F" }}
+        </a>
+        </li>
+    {% endfor %}
+</ul>
+
+
+

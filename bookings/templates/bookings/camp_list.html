@@ -1,0 +1,11 @@
+<h2>Camps</h2>
+<ul>
+    {% for camp in camps_info %}
+    <li>
+        <a href="{% url 'camp_archive' camp.camp_name %}">
+            {{ camp.camp_name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
