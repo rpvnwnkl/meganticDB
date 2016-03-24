@@ -8,6 +8,8 @@ from bookings.models import Camp
 from bookings.models import Reservation
 from bookings.models import ReservationDetail
 
+import datetime
+
 class MembersInfoView(ListView):
     model = Member
     context_object_name = 'members_info'
@@ -23,6 +25,16 @@ class ReservationInfoView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ReservationInfoView, self).get_context_data(**kwargs)
+        # collect camp/guide info for each day of stay
+        details = []
+        resDetailInstances =  ReservationDetail.objects.filter(reservation=self.kwargs['pk'])
+        for each_day in resDetailInstances:
+            details.append({
+                        'day':each_day.day,
+                        'camps':each_day.camps.all(), 
+                        'guides':each_day.guides.all(),
+                        })
+        context['details'] = details
         return context
 
 class CampArchive(ArchiveIndexView):

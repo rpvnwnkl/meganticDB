@@ -1,5 +1,31 @@
 <ul>
-    {% for detail in reservation %}
-    <li>{{ detail }}</li>
-    {% endfor %}
+   <li>Member: {{ reservation.member }}</li>
+   <li>Party Size: {{ reservation.party_size }}</li>
+   <li>Arrival Date: {{ reservation.arrival }}</li>
+   <li>First Meal: {{ reservation.get_first_meal_display }}</li>
+   <li>Departure Date: {{ reservation.departure }}</li>
+   <li>Last Meal: {{ reservation.get_last_meal_display }}</li>
+</ul>
+
+
+<ul>
+{% for each_day in details %}
+<h3>{{ each_day.day }}</h3>
+<li>
+    <ul><h4>Camps:</h4>
+        {% for each_camp in each_day.camps %}
+        <li>{{ each_camp.camp_name }}</li>
+        {% endfor %}
+    </ul>
+</li>
+
+<li>
+    <ul><h4>Guides:</h4>
+        {% for each_guide in each_day.guides %}
+        <li>{{ each_guide.initial_name }}</li>
+        {% endfor %}
+    </ul>
+</li>
+</li>
+{% endfor %}
 </ul>
