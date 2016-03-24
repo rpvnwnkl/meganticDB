@@ -15,18 +15,7 @@ def index(request):
             }
     return HttpResponse(template.render(context, request))
 
-def reservation_detail(request, res_id):
-    current_reservation = Reservation.objects.get(pk=res_id)
-    reservation_info = model_to_dict(current_reservation)
-    res_serial = serializers.serialize('python', [current_reservation,], use_natural_foreign_keys=True)
-
-    context = {
-            'current_reservation': current_reservation,
-            'reservation_info': reservation_info,
-            'res_serial': res_serial,
-            }
-    return render(request, 'bookings/reservation_detail.html', context)
-
+# this function needs to be removed
 def xml_detail(request, res_id):
     current_reservation = Reservation.objects.get(pk=res_id)
     xml_obj = serializers.serialize('xml', [current_reservation,], use_natural_foreign_keys=True)

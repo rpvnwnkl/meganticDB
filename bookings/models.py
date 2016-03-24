@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib import admin
 from django.db.models import Q
 from django.core import serializers
+from django.core.urlresolvers import reverse
 
 import json
 from datetime import date, timedelta
@@ -78,6 +79,7 @@ class Reservation(models.Model):
     first_meal = models.CharField('First meal at camp', max_length=1, choices=MEAL_CHOICES, default='LUNCH', help_text="First Meal")
     last_meal = models.CharField('Last meal at camp', max_length=1, choices=MEAL_CHOICES, default='LUNCH', help_text="Last Meal")
     
+    # once views are updated, remove this function
     def archive_dict(self):
          memberName = self.member.full_name()
          arrivalDate = self.arrival
@@ -96,11 +98,30 @@ class Reservation(models.Model):
     def save(self, *args, **kwargs):
         if self.id == None:
             super(Reservation, self).save(*args, **kwargs)
+            # add ReservationDetail for each day of stay
             reservation_id = self.id
             days_staying = (self.departure - self.arrival).days
             for each_day in range(days_staying + 1): 
-                new_detail = ReservationDetail.objects.create(reservation=self, day=(self.arrival+timedelta(days=each_day)))
-    
+                if each_day == 0:
+                    new_detail = ReservationDetail.objects.create(
+                            reservation=self,
+                            day=(self.arrival+timedelta(days=each_day)),
+                            is_first_day=True,
+                            )
+                elif each_day == (days_staying):
+                    new_detail = ReservationDetail.objects.create(
+                            reservation=self, 
+                            day=(self.arrival+timedelta(days=each_day)),
+                            is_last_day=True,
+                            )
+                else:
+                    new_detail = ReservationDetail.objects.create(
+                            reservation=self,
+                            day=(self.arrival+timedelta(days=each_day)),
+                            )
+    def get_absolute_url(self):
+        return reverse('reservation_info', args=[self.id])
+
     class Meta:
         ordering = ['arrival']
 
@@ -109,8 +130,10 @@ class ReservationDetail(models.Model):
 
     reservation = models.ForeignKey('Reservation', on_delete=models.CASCADE, unique_for_date='day')
     day = models.DateField()
-    camp = models.ManyToManyField('Camp')
-    guide = models.ManyToManyField('Guide')
+    camps = models.ManyToManyField('Camp')
+    guides = models.ManyToManyField('Guide')
+    is_first_day = models.BooleanField(default=False)
+    is_last_day = models.BooleanField(default=False)
 
     def __str__(self):
         return self.day.strftime('%x')
