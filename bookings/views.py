@@ -15,16 +15,6 @@ def index(request):
             }
     return HttpResponse(template.render(context, request))
 
-# this function needs to be removed
-def xml_detail(request, res_id):
-    current_reservation = Reservation.objects.get(pk=res_id)
-    xml_obj = serializers.serialize('xml', [current_reservation,], use_natural_foreign_keys=True)
-    context = {
-            'current_reservation': current_reservation,
-            'xml_obj': xml_obj,
-            }
-    return render(request, 'bookings/xml_detail.html', context)
-
 def year_archive(request, year):
     year_entries = Reservation.objects.filter(arrival__year=year)
     entry_dicts = [entry.archive_dict() for entry in year_entries]

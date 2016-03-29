@@ -1,31 +1,39 @@
-{% if current_reservation %}
-<h1>{{ current_reservation|title }}</h1>
+{% block content %}
+<a href="{% url 'reservation_list' %}">/reservations...</a>
+<h1>Reservation #{{ reservation.id }}</h1>
+<a href="{% url 'reservation_edit' pk=reservation.pk %}">Edit</a>
+<a href="{% url 'reservation_delete' pk=reservation.pk %}">Delete</a>
+<ul>
+    <li>Member: <a href="{% url 'member_detail' pk=reservation.member.pk %}">{{ reservation.member }}</a></li>
+   <li>Party Size: {{ reservation.party_size }}</li>
+   <li>Arrival Date: {{ reservation.arrival }}</li>
+   <li>First Meal: {{ reservation.get_first_meal_display }}</li>
+   <li>Departure Date: {{ reservation.departure }}</li>
+   <li>Last Meal: {{ reservation.get_last_meal_display }}</li>
+</ul>
 
+Camps
+Guides
+<ul>
+{% for each_day in details %}
+<h3>{{ each_day.day }}</h3>
+<li>
+    <ul><h4>Camps:</h4>
+        {% for each_camp in each_day.camps %}
+        <li>{{ each_camp.camp_name }}</li>
+        {% endfor %}
+    </ul>
+</li>
 
-{# taking object as dict from 'model_to_dict' #}
-    <table>
-    {% for field, value in reservation_info.items %}
-        <tr>
-            <td>{{ field }}</td>
-            <td>{{ value }}</td>
-        </tr>
-    {% endfor %}   
-    </table>
+<li>
+    <ul><h4>Guides:</h4>
+        {% for each_guide in each_day.guides %}
+        <li>{{ each_guide.initial_name }}</li>
+        {% endfor %}
+    </ul>
+</li>
+</li>
+{% endfor %}
+</ul>
 
-    </br></br>
-
-
-{# taking object as serial (~list of dicts) and treating as dict #}
-    <table>
-    {% for field, value in res_serial.0.fields.items %}
-        <tr>
-            <td>{{ field }}: </td>
-            <td>{{ value }}.</td>
-        </tr>
-    {% endfor %}
-    </table>
-
-{% else %}
-    <p>No reservation info.</p>
-{% endif %}
-
+{% endblock %}

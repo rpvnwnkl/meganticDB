@@ -1,0 +1,48 @@
+<form method="LINK" action="{% url 'member_list' %}">
+    <input type="submit" value="Member List"/>
+</form>
+<table>
+    <tr>
+        <td><h1>{{ member.full_name }}</h1></td>
+        <td>
+            <form method="LINK" action="{% url 'member_new' %}">
+                <input type="submit" value="New"/>
+            </form>
+        </td>
+        <td>
+            <form method="LINK" action="{% url 'member_update' pk=member.id %}">
+                <input type="submit" value="Edit"/>
+            </form>
+        </td>
+        <td>
+            <form method="LINK" action="{% url 'member_delete' pk=member.id %}">
+                <input type="submit" value="Delete"/>
+            </form>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td><h2>Reservations</h2></td>
+        <td>
+            <form method="LINK" action="{% url 'reservation_new' pk=member.id%}">
+                <input type="submit" value="New"/>
+            </form>
+        </td>
+        <td>
+            <form method="LINK" action="{% url 'reservation_list' %}">
+                <input type="submit" value="All"/>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<ul>
+    {% for reservation in reservations %}
+    <li>
+    <a href="{% url 'reservation_detail' pk=reservation.pk %}">
+        {{ reservation.arrival }} - {{ reservation.departure }}
+    </a>
+    </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,9 @@
+{% block content %}
+<h1>Delete Member</h1>
+<p>Are you sure you want to delte the member {{ member }}?</p>
+<form action="{% url 'member_delete' pk=member.id %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Yes, delete." />
+    <a href="{% url 'member_detail' pk=member.id %}">No, cancel.</a>
+</form>
+{% endblock %}

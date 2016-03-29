@@ -3,8 +3,10 @@ from django.contrib import admin
 from django.db.models import Q
 from django.core import serializers
 from django.core.urlresolvers import reverse
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
-import json
+import json, logging
 from datetime import date, timedelta
 
 # Create your models here.
@@ -39,6 +41,8 @@ class Person(models.Model):
 class Member(Person):
     def __str__(self):
         return self.full_name()
+    def get_absolute_url(self):
+        return reverse('member_detail', kwargs={'pk': self.pk})
 
 class Guide(Person):
 
@@ -79,6 +83,7 @@ class Reservation(models.Model):
     first_meal = models.CharField('First meal at camp', max_length=1, choices=MEAL_CHOICES, default='LUNCH', help_text="First Meal")
     last_meal = models.CharField('Last meal at camp', max_length=1, choices=MEAL_CHOICES, default='LUNCH', help_text="Last Meal")
     
+    # METHODS 
     # once views are updated, remove this function
     def archive_dict(self):
          memberName = self.member.full_name()
@@ -96,29 +101,64 @@ class Reservation(models.Model):
         return 'Booking #' + str(self.id) + ' - ' + str(self.member) + ' - ' + date
 
     def save(self, *args, **kwargs):
-        if self.id == None:
-            super(Reservation, self).save(*args, **kwargs)
-            # add ReservationDetail for each day of stay
-            reservation_id = self.id
-            days_staying = (self.departure - self.arrival).days
-            for each_day in range(days_staying + 1): 
-                if each_day == 0:
-                    new_detail = ReservationDetail.objects.create(
-                            reservation=self,
-                            day=(self.arrival+timedelta(days=each_day)),
-                            is_first_day=True,
-                            )
-                elif each_day == (days_staying):
-                    new_detail = ReservationDetail.objects.create(
+        #day_list = self.days_there(self.arrival, self.departure)
+        super(Reservation, self).save(*args, **kwargs)
+        self.add_details()
+        return
+    
+    def add_details(self):
+        day_list = self.days_there(self.arrival, self.departure)
+        for each_day in day_list:
+            if not ReservationDetail.objects.filter(day=each_day, reservation=self):
+                if each_day == day_list[0]:
+                    # this is the first day of stay
+                    ReservationDetail.objects.create(
                             reservation=self, 
-                            day=(self.arrival+timedelta(days=each_day)),
-                            is_last_day=True,
-                            )
-                else:
-                    new_detail = ReservationDetail.objects.create(
+                            day=each_day, 
+                            is_first_day=True)
+                elif each_day == day_list[-1]:
+                    # this is the last day
+                    ReservationDetail.objects.create(
                             reservation=self,
-                            day=(self.arrival+timedelta(days=each_day)),
-                            )
+                            day=each_day,
+                            is_last_day=True)
+                else:
+                    # all the other days
+                    ReservationDetail.objects.create(
+                            reservation=self,
+                            day=each_day)
+        # in case of updated entry:
+        self.remove_extra_details()
+        return
+
+    def remove_extra_details(self):
+        #this pulls up the reservation details in a queryset and deletes those outside of arrival - departure
+        the_details = ReservationDetail.objects.filter(reservation=self).order_by('day')
+        deleted_items = the_details.filter(day__lt=self.arrival).delete()
+        deleted_items2 = the_details.filter(day__gt=self.departure).delete()
+        print(deleted_items, deleted_items2)
+        return
+
+    def days_there(self, arrival, departure):
+        # this returns a list of datetime instances corresponding to arrival - departure
+        days_staying = (departure - arrival).days
+        day_list = [arrival + timedelta(days=each_day) for each_day in range(days_staying + 1)]
+        return day_list
+
+    def clean(self):
+        # this validates whether there are existing res for these dates
+        day_list = self.days_there(self.arrival, self.departure)
+        for each_day in day_list:
+            if ReservationDetail.objects.filter(
+                    day=each_day,
+                    reservation__member=self.member,
+                    ).exclude(reservation__pk=self.pk):
+                print(ReservationDetail.objects.filter(day=each_day, reservation__member=self.member).exclude(reservation__pk=self.pk))
+                raise ValidationError(
+                        {'member':_('overlapping dates')},
+                        code='invalid',
+                        )
+
     def get_absolute_url(self):
         return reverse('reservation_info', args=[self.id])
 
@@ -137,4 +177,7 @@ class ReservationDetail(models.Model):
 
     def __str__(self):
         return self.day.strftime('%x')
-        #return '{0} - {1} - {2} - {3}'.format(self.day, self.reservation.member, self.camp, self.guide) 
+
+    def save(self, *args, **kwargs):
+        if self.id == None:
+            super(ReservationDetail, self).save(*args, **kwargs)

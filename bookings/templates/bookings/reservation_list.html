@@ -1,0 +1,15 @@
+<h1>Reservations</h1>
+<a href="{% url 'reservation_new' %}">New</a>
+{% for reservation in reservation_list %}
+<ul>
+    <li>
+    <a href="{% url 'reservation_detail' pk=reservation.pk %}">
+        #{{ reservation.id }} {{ reservation.member }}
+    </a>
+    </li>
+        <ul>
+            <li>{{ reservation.arrival }}</li>
+            <li>{{ reservation.departure }}</li>
+        </ul>
+</ul>
+{% endfor %}
