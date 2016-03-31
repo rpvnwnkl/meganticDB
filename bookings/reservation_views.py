@@ -9,11 +9,11 @@ from django.views.generic.dates import WeekArchiveView
 from django.views.generic.dates import DayArchiveView
 from django.views.generic.dates import ArchiveIndexView
 from django.views.generic import DetailView, ListView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from bookings.models import Reservation, ReservationDetail
 
-from .forms import ReservationForm
+#from .forms import ReservationForm
 
 class ReservationListView(ListView):
     model = Reservation
@@ -22,52 +22,29 @@ class ReservationListView(ListView):
 
 class ReservationCreate(CreateView):
     model = Reservation
-    form_class = ReservationForm
+    #form_class = ReservationForm
     template_name = 'bookings/reservation_edit.html'
+    fields =['member', 'party_size', 'arrival', 'departure', 'first_meal', 'last_meal']
+
     def get_initial(self):
-        return {'member': self.kwargs['pk']}
-    def post(self, request, *args, **kwargs):
-        form = self.form_class(request.POST)
-        if form.is_valid():
-            reservation = form.save(commit=False)
-            #do other things
-            reservation.save()
-            return redirect('reservation_detail', pk=reservation.pk)
+        # this helps prepopulate the form based on presence of pk
+        if 'pk' in self.kwargs:
+            return {'member': self.kwargs['pk']}
         else:
-            return render(request, 'bookings/reservation_edit.html', {'form':form})
+            return
 
     def get_success_url(self):
         return reverse_lazy('reservation_detail', kwargs={'pk':self.object.pk})
 
-def reservation_new(request):
-    if request.method == "POST":
-        form = ReservationForm(request.POST)
-        if form.is_valid():
-            reservation = form.save(commit=False)
-            #reservation.created_on_date = timezone.now()
-            reservation.save()
-            return redirect('reservation_detail', pk=reservation.pk)
-    else:
-        form = ReservationForm
-    return render(request, 'bookings/reservation_edit.html', {'form': form})
+class ReservationUpdate(UpdateView):
+    model = Reservation
+    template_name = 'bookings/reservation_edit.html'
+    fields = ['member', 'party_size', 'arrival', 'departure', 'first_meal', 'last_meal']
 
-def reservation_edit(request, pk):
-    reservation = get_object_or_404(Reservation, pk=pk)
-    if request.method == "POST":
-        form = ReservationForm(request.POST, instance=reservation)
-        if form.is_valid():
-            reservation = form.save(commit=False)
-            #reservation.created_on_date = timezone.now()
-            reservation.save()
-            return redirect('reservation_detail', pk=reservation.pk)
-    else:
-        form = ReservationForm(instance=reservation)
-    return render(request, 'bookings/reservation_edit.html', {'form': form})
-
-def reservation_delete(request, pk):
-    reservation = get_object_or_404(Reservation, pk=pk)
-    reservation.delete()
-    return redirect('reservation_list')
+class ReservationDelete(DeleteView):
+    model = Reservation
+    template_name = 'bookings/reservation_delete.html'
+    success_url = reverse_lazy('reservation_list')
 
 class ReservationDetailView(DetailView):
     model = Reservation
@@ -80,6 +57,7 @@ class ReservationDetailView(DetailView):
         resDetailInstances =  ReservationDetail.objects.filter(reservation=self.kwargs['pk'])
         for each_day in resDetailInstances:
             details.append({
+                'id':each_day.id,
                 'day':each_day.day,
                 'camps':each_day.camps.all(), 
                 'guides':each_day.guides.all(),

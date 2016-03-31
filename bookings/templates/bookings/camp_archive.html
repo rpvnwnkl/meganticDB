@@ -1,8 +1,0 @@
-<h1>{{ camp }} reservations</h1>
-<ul>
-    {% for each_year in date_list %}
-    <li>
-    <a href="{% url 'camp_year_archive' camp each_year|date:"Y" %}">{{ each_year|date:"Y" }}</a>
-    </li>
-    {% endfor %}
-</ul>

@@ -1,16 +1,12 @@
 from django.conf.urls import url, include
 
 from . import views
-from . import forms
 
 from . import reservation_views as Res
 from . import member_views as Mem
-
-from bookings.info_views import CampsInfoView
-
-from bookings.info_views import CampArchive
-from bookings.info_views import CampYearArchive
-from bookings.info_views import CampMonthArchive
+from . import camp_views as Cam
+from . import guide_views as Gui
+from . import reservationdetail_views as ResD
 
 reservation_patterns = [
         # list of reservations
@@ -25,6 +21,7 @@ reservation_patterns = [
             Res.ReservationCreate.as_view(),
             name='reservation_new',
             ),
+        # new res for particular member
         url(
             r'^new/(?P<pk>[0-9]*)$', 
             Res.ReservationCreate.as_view(),
@@ -38,14 +35,14 @@ reservation_patterns = [
             ),
         # edit reservation form
         url(
-            r'^(?P<pk>[0-9]+)/edit/$',
-            Res.reservation_edit, 
+            r'^edit/(?P<pk>[0-9]+)/$',
+            Res.ReservationUpdate.as_view(), 
             name='reservation_edit',
             ),
         # delete reservation
         url(
-            r'^(?P<pk>[0-9]+)/remove/$',
-            Res.reservation_delete,
+            r'^remove/(?P<pk>[0-9]+)/$',
+            Res.ReservationDelete.as_view(),
             name='reservation_delete',
             ),
        ]
@@ -80,59 +77,109 @@ member_patterns = [
             name='member_detail',
             ),
         ]
-archive_patterns = [
-        url(
-            r'^$',
-            Res.ReservationArchiveView.as_view(),
-                name="reservation_archive",
-                ),
-        url(
-            r'^(?P<year>[0-9]{4})/$',
-            Res.ReservationYearArchiveView.as_view(),
-            name="reservation_year_archive",
-            ),
-        url(
-            r'^(?P<year>[0-9]{4})/(?P<month>[0-9]{2})/$',
-            Res.ReservationMonthArchiveView.as_view(),
-            name="reservation_month_archive",
-            ),
-        url(
-            r'^(?P<year>[0-9]{4})/week/(?P<week>[0-9]+)/$',
-            Res.ReservationWeekArchiveView.as_view(),
-            name="archive_week",
-            ),
-        url(
-            r'^(?P<year>[0-9]{4})/(?P<month>[-\w]+)/(?P<day>[0-9]{2})/$',
-            Res.ReservationDayArchiveView.as_view(),
-            name="reservation_day_archive",
-            ),
-       ]
-base_info_patterns = [
-        url(r'^camps/$',
-            CampsInfoView.as_view(),
-            name="camp_info",
-            ),
-       ]
 
 camp_patterns = [
-        url(r'^(?P<camp>[-\w ]+)/$',
-            CampArchive.as_view(),
-            name="camp_archive",
+        # camp list
+        url(
+            r'^list/$',
+            Cam.CampListView.as_view(),
+            name='camp_list',
             ),
-        url(r'^(?P<camp>[-\w ]+)/(?P<year>[0-9]{4})/$',
-            CampYearArchive.as_view(),
-            name="camp_year_archive",
+        # new camp
+        url(
+            r'^new/$',
+            Cam.CampCreate.as_view(),
+            name='camp_new',
             ),
-        url(r'^(?P<camp>[-\w ]+)/(?P<year>[0-9]{4})/(?P<month>[-\w]+)/$',
-            CampMonthArchive.as_view(),
-            name="camp_month_archive",
+        # update camp
+        url(
+            r'^edit/(?P<pk>[0-9]+)/$',
+            Cam.CampUpdate.as_view(),
+            name='camp_update',
+            ),
+        # delete camp
+        url(r'^(?P<pk>[0-9]+)/delete/$',
+            Cam.CampDelete.as_view(),
+            name='camp_delete',
+            ),
+        # camp details
+        url(
+            r'^(?P<pk>[0-9]+)/$',
+            Cam.CampDetailView.as_view(),
+            name='camp_detail',
             ),
         ]
+
+guide_patterns = [
+        # guide list
+        url(
+            r'^list/$',
+            Gui.GuideListView.as_view(),
+            name='guide_list',
+            ),
+        # new guide
+        url(
+            r'^new/$',
+            Gui.GuideCreate.as_view(),
+            name='guide_new',
+            ),
+        # update guide
+        url(
+            r'^edit/(?P<pk>[0-9]+)/$',
+            Gui.GuideUpdate.as_view(),
+            name='guide_update',
+            ),
+        # delete guide
+        url(r'^(?P<pk>[0-9]+)/delete/$',
+            Gui.GuideDelete.as_view(),
+            name='guide_delete',
+            ),
+        # guide details
+        url(
+            r'^(?P<pk>[0-9]+)/$',
+            Gui.GuideDetailView.as_view(),
+            name='guide_detail',
+            ),
+        ]
+
+resdetail_patterns = [
+        # resdetail list
+        url(
+            r'^list/$',
+            ResD.ReservationDetailListView.as_view(),
+            name='resdetail_list',
+            ),
+        # new resdetail
+        url(
+            r'^new/$',
+            ResD.ReservationDetailCreate.as_view(),
+            name='resdetail_new',
+            ),
+        # update resdetail
+        url(
+            r'^edit/(?P<pk>[0-9]+)/$',
+            ResD.ReservationDetailUpdate.as_view(),
+            name='resdetail_update',
+            ),
+        # delete resdetail
+        url(r'^(?P<pk>[0-9]+)/delete/$',
+            ResD.ReservationDetailDelete.as_view(),
+            name='resdetail_delete',
+            ),
+        # resdetail details
+        url(
+            r'^(?P<pk>[0-9]+)/$',
+            ResD.ReservationDetailDetailView.as_view(),
+            name='resdetail_detail',
+            ),
+        ]
+
+
 urlpatterns = [
         url(r'^$', views.index, name='index'),
-        url(r'^info/', include(base_info_patterns)),
-        url(r'^archive/', include(archive_patterns)),
         url(r'^reservation/', include(reservation_patterns)),
         url(r'^member/', include(member_patterns)),
         url(r'^camp/', include(camp_patterns)),
+        url(r'^guide/', include(guide_patterns)),
+        url(r'^resdetail/', include(resdetail_patterns)),
         ] 
