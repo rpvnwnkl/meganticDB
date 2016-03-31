@@ -1,39 +1,22 @@
+{% extends 'bookings/base.html' %}
+
 {% block content %}
-<a href="{% url 'reservation_list' %}">/reservations...</a>
-<h1>Reservation #{{ reservation.id }}</h1>
-<a href="{% url 'reservation_edit' pk=reservation.pk %}">Edit</a>
-<a href="{% url 'reservation_delete' pk=reservation.pk %}">Delete</a>
-<ul>
-    <li>Member: <a href="{% url 'member_detail' pk=reservation.member.pk %}">{{ reservation.member }}</a></li>
-   <li>Party Size: {{ reservation.party_size }}</li>
-   <li>Arrival Date: {{ reservation.arrival }}</li>
-   <li>First Meal: {{ reservation.get_first_meal_display }}</li>
-   <li>Departure Date: {{ reservation.departure }}</li>
-   <li>Last Meal: {{ reservation.get_last_meal_display }}</li>
-</ul>
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reservation_list' %}">Reservations</a></li>
+    <li class="active">{{ reservation.member.last_name }} #{{ reservation.id }}</li>
+</ol>
 
-Camps
-Guides
-<ul>
-{% for each_day in details %}
-<h3>{{ each_day.day }}</h3>
-<li>
-    <ul><h4>Camps:</h4>
-        {% for each_camp in each_day.camps %}
-        <li>{{ each_camp.camp_name }}</li>
-        {% endfor %}
-    </ul>
-</li>
-
-<li>
-    <ul><h4>Guides:</h4>
-        {% for each_guide in each_day.guides %}
-        <li>{{ each_guide.initial_name }}</li>
-        {% endfor %}
-    </ul>
-</li>
-</li>
-{% endfor %}
+<h1><a href="{% url 'member_detail' pk=reservation.member.pk %}">{{ reservation.member.full_name }}</a></h1>
+<p>Party of {{ reservation.party_size }}</p>
+<p>Arrival: {{ reservation.arrival }} before {{ reservation.get_first_meal_display }}</p>
+    <p>Departure: {{ reservation.departure }} after {{ reservation.get_last_meal_display }}</p>
 </ul>
+<a href="{% url 'reservation_update' pk=reservation.id %}" role="button" class="btn btn-info">
+    <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="edit"></span>
+</a>
+<a href="{% url 'reservation_delete' pk=reservation.id %}" role="button" class="btn btn-warning">
+    <span class="glyphicon glyphicon-trash" aria-hidden="true" title="delete"></span>
+</a>
 
 {% endblock %}

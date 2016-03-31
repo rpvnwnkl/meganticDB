@@ -1,10 +1,13 @@
-at
-at
-at
-at
-at
-at
-at
-at
-at
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+
+<h1>Delete Reservation Detail</h1>
+<p>Are you sure you want to delete the Reservation Detail {{ resdetail.day }}?</p>
+<form action="{% url 'resdetail_delete' pk=resdetail.id %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Yes, delete." />
+    <a href="{% url 'resdetail_detail' pk=resdetail.id %}">No, cancel.</a>
+</form>
+
 {% endblock %}

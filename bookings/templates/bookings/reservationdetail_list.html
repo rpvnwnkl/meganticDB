@@ -1,13 +1,14 @@
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
+{% extends 'bookings/base.html' %}
+{% block content %}
+<h1>Reservation Details</h1>
+<a href="{% url 'resdetail_new' %}">New</a>
+<ul>
+    {% for resdetail in resdetail_list %}
+    <li>
+        <a href="{% url 'resdetail_detail' pk=resdetail.pk %}">
+            {{ resdetail.reservation.member}} - {{ resdetail.day }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

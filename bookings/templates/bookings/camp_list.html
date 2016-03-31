@@ -1,11 +1,14 @@
-<h2>Camps</h2>
+{% extends 'bookings/base.html' %}
+{% block content %}
+<h1>Camps</h1>
+<a href="{% url 'camp_new' %}">New</a>
 <ul>
-    {% for camp in camps_info %}
+    {% for camp in camp_list %}
     <li>
-        <a href="{% url 'camp_archive' camp.camp_name %}">
-            {{ camp.camp_name }}
+        <a href="{% url 'camp_detail' pk=camp.pk %}">
+        {{ camp.camp_name }}
         </a>
     </li>
     {% endfor %}
 </ul>
-
+{% endblock %}

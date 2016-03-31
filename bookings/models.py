@@ -54,7 +54,7 @@ class Guide(Person):
 class Camp(models.Model):
 
     camp_name = models.CharField(max_length=32)
-    sleeps = models.IntegerField(default=1, help_text="Sleeps how many")
+    sleeps = models.PositiveSmallIntegerField(default=1, help_text="Sleeps how many")
 
     def __str__(self):
         return self.camp_name
@@ -79,7 +79,7 @@ class Reservation(models.Model):
     objects = ReservationManager()
 
     member = models.ForeignKey('Member', on_delete=models.CASCADE)
-    party_size = models.IntegerField(default=1, help_text="Number of Guests in Party")
+    party_size = models.PositiveSmallIntegerField(default=1, help_text="Number of Guests in Party")
     arrival = models.DateField(default=date.today, help_text="Arrival Date")
     departure = models.DateField(default=date.today, help_text="Arrival Date")
     MEAL_CHOICES = (

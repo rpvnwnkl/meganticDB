@@ -37,7 +37,7 @@ reservation_patterns = [
         url(
             r'^edit/(?P<pk>[0-9]+)/$',
             Res.ReservationUpdate.as_view(), 
-            name='reservation_edit',
+            name='reservation_update',
             ),
         # delete reservation
         url(

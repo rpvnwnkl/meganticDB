@@ -1,10 +1,13 @@
-at
-at
-at
-at
-at
-at
-at
-at
-at
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+
+<h1>Delete Guide</h1>
+<p>Are you sure you want to delete the guide {{ guide.full_name }}?</p>
+<form action="{% url 'guide_delete' pk=guide.id %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Yes, delete." />
+    <a href="{% url 'guide_detail' pk=guide.id %}">No, cancel.</a>
+</form>
+
 {% endblock %}

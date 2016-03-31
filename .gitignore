@@ -3,3 +3,4 @@ bookings/migrations/*
 meganticsite/__pycache__/*
 bookings/__init__.py
 meganticsite/__init__.py
+db.sqlite3*

@@ -1,18 +1,15 @@
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+<h1>New Camp</h1>
+<form  method="POST" class="reservation-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="OK">
+
+</form>
+<form method="LINK" action="{% url 'camp_list' %}">
+    <input type="submit" value="Cancel">
+</form>
+
 {% endblock %}

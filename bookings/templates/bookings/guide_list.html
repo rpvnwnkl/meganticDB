@@ -1,13 +1,14 @@
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
-at
+{% extends 'bookings/base.html' %}
+{% block content %}
+<h1>Guides</h1>
+<a href="{% url 'guide_new' %}">New</a>
+<ul>
+    {% for guide in guide_list %}
+    <li>
+        <a href="{% url 'guide_detail' pk=guide.pk %}">
+        {{ guide.full_name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}

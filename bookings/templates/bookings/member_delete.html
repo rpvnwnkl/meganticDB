@@ -1,9 +1,17 @@
+{% extends 'bookings/base.html' %}
+
 {% block content %}
-<h1>Delete Member</h1>
-<p>Are you sure you want to delte the member {{ member }}?</p>
-<form action="{% url 'member_delete' pk=member.id %}" method="POST">
-    {% csrf_token %}
-    <input type="submit" value="Yes, delete." />
-    <a href="{% url 'member_detail' pk=member.id %}">No, cancel.</a>
-</form>
+<div class="panel panel-default">
+    <div class="panel-body">
+        <h1>Delete Member</h1>
+        <p>Are you sure you want to delete the member {{ member }}?</p>
+        <form action="{% url 'member_delete' pk=member.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-lf btn-danger" title="Delete">Delete</button>
+            <a href="{% url 'member_detail' pk=member.id %}">
+                <button type="button" class="btn btn-lf btn-default" title="cancel">Cancel</button>
+            </a>
+        </form>
+    </div>
+</div>
 {% endblock %}

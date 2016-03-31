@@ -1,3 +1,5 @@
+{% extends 'bookings/base.html' %}
+{% block content %}
 <h1>Members</h1>
 <a href="{% url 'member_new' %}">New</a>
 <ul>
@@ -9,4 +11,4 @@
     </li>
     {% endfor %}
 </ul>
-
+{% endblock %}
