@@ -7,14 +7,14 @@
     <li><a href="{% url 'member_list' %}">Members</a></li>
     <li class="active">{{ member.full_name }}</li>
 </ol>
-
-<h1>{{ member.full_name }}</h1>
 <a href="{% url 'member_update' pk=member.id %}" role="button" class="btn btn-info">
     <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="edit"></span>
 </a>
 <a href="{% url 'member_delete' pk=member.id %}" role="button" class="btn btn-warning">
     <span class="glyphicon glyphicon-trash" aria-hidden="true" title="delete"></span>
 </a>
+<h1>{{ member.full_name }}</h1>
+
 
 <h2>Reservations</h2>
 <a href="{% url 'reservation_new' pk=member.id%}">New</a>
