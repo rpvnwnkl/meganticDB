@@ -52,17 +52,9 @@ class ReservationDetailView(DetailView):
     context_object_name = 'reservation'
     def get_context_data(self, **kwargs):
         context = super(ReservationDetailView, self).get_context_data(**kwargs)
-        # collect camp/guide info for each day of stay
-        details = []
-        resDetailInstances =  ReservationDetail.objects.filter(reservation=self.kwargs['pk'])
-        for each_day in resDetailInstances:
-            details.append({
-                'id':each_day.id,
-                'day':each_day.day,
-                'camps':each_day.camps.all(), 
-                'guides':each_day.guides.all(),
-                                                                                                })
-        context['details'] = details
+        reservation_details = ReservationDetail.objects.filter(reservation=self.kwargs['pk'])
+        context['reservation_details'] = reservation_details
+        print(context)
         return context
 
 class ReservationArchiveView(ArchiveIndexView):

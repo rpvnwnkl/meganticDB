@@ -45,6 +45,10 @@ class Member(Person):
     def get_absolute_url(self):
         return reverse('member_detail', kwargs={'pk': self.pk})
 
+##############################
+### Guide Models #############
+##############################
+
 class Guide(Person):
 
     def __str__(self):
@@ -52,8 +56,17 @@ class Guide(Person):
     def get_absolute_url(self):
         return reverse('guide_detail', kwargs={'pk': self.pk})
 
+class GuideDetail(models.Model):
+    reservation_detail = models.ForeignKey('ReservationDetail')
+    guide = models.ManyToManyField('Guide')
+    
+    def save(self, *args, **kwargs):
+        if self.id == None:
+            super(GuideDetail, self).save(*args, **kwargs)
 
+###############################
 ### Camp model and managers ###
+###############################
 
 class CampManager(models.Manager):
 
@@ -112,7 +125,17 @@ class Camp(models.Model):
     def is_vacant(self, date_to_check):
         return len(ReservationDetail.objects.filter(camps=self.pk, day=date_to_check)) != 0
 
-
+class CampDetail(models.Model):
+    
+    reservationdetail = models.ForeignKey('ReservationDetail')
+    camp = models.ManyToManyField('Camp')
+    number_sleeping = models.PositiveSmallIntegerField(default=1, help_text="How many here tonight?")
+    
+    def save(self, *args, **kwargs):
+        if self.id == None:
+            super(CampDetail, self).save(*args, **kwargs)
+    def capacity(self):
+        return self.camp.sleeps
 
 ### Reservation Model ###
 
@@ -150,6 +173,8 @@ class Reservation(models.Model):
     
     # METHODS 
     def __str__(self):
+        return str(self.id)
+    # this next part is skipped for now
         date = self.arrival.strftime('%x')
         return 'Booking #' + str(self.id) + ' - ' + str(self.member) + ' - ' + date
     # Django method modifier
@@ -223,13 +248,17 @@ class Reservation(models.Model):
     class Meta:
         ordering = ['arrival']
 
+class ReservationDetailManager(models.Manager):
+    
+    pass
 
 class ReservationDetail(models.Model):
 
+    objects = ReservationDetailManager()
     reservation = models.ForeignKey('Reservation', on_delete=models.CASCADE, unique_for_date='day')
     day = models.DateField()
-    camps = models.ManyToManyField('Camp')
-    guides = models.ManyToManyField('Guide')
+    #camps = models.ManyToManyField('Camp')
+    #guides = models.ManyToManyField('Guide')
     is_first_day = models.BooleanField(default=False)
     is_last_day = models.BooleanField(default=False)
 
@@ -239,6 +268,17 @@ class ReservationDetail(models.Model):
     def save(self, *args, **kwargs):
         if self.id == None:
             super(ReservationDetail, self).save(*args, **kwargs)
+    
+        # this method call adds GuideDetail objects 
+        GuideDetail.objects.create(reservationdetail=self)
+        CampDetail.objects.create(reservationdetail=self)
+
+        return
+
     def get_absolute_url(self):
         return reverse('resdetail_detail', kwargs={'pk':self.id})
+    
+    def guide_list(self):
+        return GuideDetail.objects.filter(reservationdetail=self.id)
+
 

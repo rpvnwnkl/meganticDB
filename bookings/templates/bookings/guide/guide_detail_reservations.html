@@ -4,14 +4,14 @@
 <ol class="breadcrumb">
     <li><a href="/">Home</a></li>
     <li><a href="{% url 'reservation_list' %}">Reservations</a></li>
-    <li><a href="{% url 'reservation_detail' pk=reservation %}">{{ current_reservation.member.last_name }} #{{ current_reservation.id }}</a></li>
+    <li><a href="#">{{ current_reservation.member.last_name }} #{{ current_reservation.id }}</a></li>
     <li class="active">Guides</li>
 </ol>
 
 <h2>Guides</h2>
 {% for reservation in reservation_details %}
 <h3>{{ reservation.day }}</h3>
-<a href="#" type="button" class="btn btn-sm btn-default">
+<a href="{% url 'guide_detail_update' pk=current_reservation.pk reservation_detail=reservation.pk %}" type="button" class="btn btn-sm btn-default">
     <span class="glyphicon glyphicon-pencil" aria-label="Edit"></span>
 </a>
 <ul>

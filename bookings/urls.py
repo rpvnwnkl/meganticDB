@@ -8,10 +8,47 @@ from . import camp_views as Cam
 from . import guide_views as Gui
 from . import reservationdetail_views as ResD
 
+guide_detail_patterns = [
+        # list of guides on reservation
+        url(
+            r'^$',
+            Gui.GuideDetailReservation.as_view(),
+            name='guide_detail_reservation',
+            ),
+        # new guide detail
+        url(
+            r'^new/$',
+            Gui.GuideDetailCreate.as_view(),
+            name='guide_detail_new',
+            ),
+        # update guide detail
+        url(
+            r'^edit/(?P<reservation_detail>[0-9]+)/$',
+            Gui.GuideDetailUpdate.as_view(),
+            name='guide_detail_update',
+            ),
+        # delete guide detail
+        url(r'^(?P<pk>[0-9]+)/delete/$',
+            Gui.GuideDetailDelete.as_view(),
+            name='guide_detail_delete',
+            ),
+        # guide detail details
+        #url(
+         #   r'^(?P<pk>[0-9]+)/$',
+          #  Gui.GuideDetailDetailView.as_view(),
+           # name='guide_detail_detail',
+            #),
+       # url(
+        #    r'^reservation/(?P<reservation>[0-9]+)/$',
+         #   Gui.GuideDetailReservation.as_view(),
+          #  name='guide_detail_reservation',
+           # ),
+        ]
+
 reservation_patterns = [
         # list of reservations
         url(
-            r'^list/$',
+            r'^$',
             Res.ReservationListView.as_view(),
             name='reservation_list',
             ),
@@ -45,6 +82,10 @@ reservation_patterns = [
             Res.ReservationDelete.as_view(),
             name='reservation_delete',
             ),
+        # edit guide details
+        url(
+            r'^(?P<pk>[0-9]+)/guides/', include(guide_detail_patterns)),
+
        ]
 member_patterns = [
         # member list
@@ -151,11 +192,11 @@ guide_patterns = [
             Gui.GuideDetailView.as_view(),
             name='guide_detail',
             ),
-        url(
-            r'^reservation/(?P<reservation>[0-9]+)/$',
-            Gui.GuideReservation.as_view(),
-            name='guide_reservation',
-            ),
+        #url(
+         #r'^reservation/(?P<reservation>[0-9]+)/$',
+          #Gui.GuideReservation.as_view(),
+           # name='guide_reservation',
+            #),
         ]
 
 resdetail_patterns = [

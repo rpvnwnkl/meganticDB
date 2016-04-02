@@ -58,7 +58,11 @@ class CampReservation(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(CampReservation, self).get_context_data(**kwargs)
         reservation_to_search = self.kwargs['reservation']
+        # this returns list of reservation detail instances for this reservation
         camp_info = ReservationDetail.objects.filter(reservation=reservation_to_search)
+        # queryset from above
         context['reservation_list'] = camp_info
-        context['current_reservation'] = ReservationDetail.objects.get(reservation=reservation_to_search)
+        # this returns the actual 
+        context['current_reservation'] = Reservation.objects.filter(id=reservation_to_search)
         return context
+
