@@ -57,7 +57,8 @@ class Guide(Person):
         return reverse('guide_detail', kwargs={'pk': self.pk})
 
 class GuideDetail(models.Model):
-    reservation_detail = models.ForeignKey('ReservationDetail')
+    reservation = models.ForeignKey('Reservation', on_delete=models.CASCADE)
+    reservation_detail = models.ForeignKey('ReservationDetail', on_delete=models.CASCADE)
     guide = models.ManyToManyField('Guide')
     
     def save(self, *args, **kwargs):
@@ -127,7 +128,8 @@ class Camp(models.Model):
 
 class CampDetail(models.Model):
     
-    reservationdetail = models.ForeignKey('ReservationDetail')
+    reservation = models.ForeignKey('Reservation', on_delete=models.CASCADE)
+    reservation_detail = models.ForeignKey('ReservationDetail', on_delete=models.CASCADE)
     camp = models.ManyToManyField('Camp')
     number_sleeping = models.PositiveSmallIntegerField(default=1, help_text="How many here tonight?")
     
@@ -270,8 +272,8 @@ class ReservationDetail(models.Model):
             super(ReservationDetail, self).save(*args, **kwargs)
     
         # this method call adds GuideDetail objects 
-        GuideDetail.objects.create(reservationdetail=self)
-        CampDetail.objects.create(reservationdetail=self)
+        GuideDetail.objects.create(reservation=self.reservation, reservation_detail=self)
+        CampDetail.objects.create(reservation=self.reservation, reservation_detail=self)
 
         return
 
@@ -279,6 +281,6 @@ class ReservationDetail(models.Model):
         return reverse('resdetail_detail', kwargs={'pk':self.id})
     
     def guide_list(self):
-        return GuideDetail.objects.filter(reservationdetail=self.id)
+        return GuideDetail.objects.filter(reservation_detail=self.id)
 
 
