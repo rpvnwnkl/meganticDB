@@ -19,4 +19,7 @@
     <span class="glyphicon glyphicon-trash" aria-hidden="true" title="delete"></span>
 </a>
 
+<a href="{% url 'camp_reservation' reservation=reservation.pk %}" role="button" class="btn btn-warning">Camps</a>
+<a href="{% url 'guide_reservation' reservation=reservation.pk %}" role="button" class="btn btn-success">Guides</a>
+
 {% endblock %}

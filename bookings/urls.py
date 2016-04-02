@@ -108,6 +108,17 @@ camp_patterns = [
             Cam.CampDetailView.as_view(),
             name='camp_detail',
             ),
+        # camps month schedule
+        url(
+            r'^schedule/(?P<year>[0-9]{4})/(?P<month>[0-9]{2})/$',
+            Cam.CampMonthlySchedule.as_view(),
+            name='camp_month_schedule',
+            ),
+        url(
+            r'^reservation/(?P<reservation>[0-9]+)/$',
+            Cam.CampReservation.as_view(),
+            name='camp_reservation',
+            ),
         ]
 
 guide_patterns = [
@@ -139,6 +150,11 @@ guide_patterns = [
             r'^(?P<pk>[0-9]+)/$',
             Gui.GuideDetailView.as_view(),
             name='guide_detail',
+            ),
+        url(
+            r'^reservation/(?P<reservation>[0-9]+)/$',
+            Gui.GuideReservation.as_view(),
+            name='guide_reservation',
             ),
         ]
 

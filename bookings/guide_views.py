@@ -1,5 +1,6 @@
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.base import TemplateView
 from django.core.urlresolvers import reverse_lazy
 
 from bookings.models import Guide, Reservation, ReservationDetail
@@ -32,3 +33,14 @@ class GuideDelete(DeleteView):
     model = Guide
     template_name = 'bookings/guide_delete.html'
     success_url = reverse_lazy('guide_list')
+
+class GuideReservation(TemplateView):
+    template_name = 'bookings/guide_reservations.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GuideReservation, self).get_context_data(**kwargs)
+        reservation_to_search = self.kwargs['reservation']
+        guide_info = ReservationDetail.objects.filter(reservation=reservation_to_search)
+        context['guide_list'] = guide_info
+        context['current_reservation'] = ReservationDetail.objects.get(reservation=reservation_to_search)
+        return context

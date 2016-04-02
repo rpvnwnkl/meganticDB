@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 import json, logging
 from datetime import date, timedelta
+import calendar
 
 # Create your models here.
 
@@ -51,7 +52,53 @@ class Guide(Person):
     def get_absolute_url(self):
         return reverse('guide_detail', kwargs={'pk': self.pk})
 
+
+### Camp model and managers ###
+
+class CampManager(models.Manager):
+
+    # this function returns a list of dicts with camp names as keys, key values are lists of booleans    
+    def get_vacancies(self, year, month):
+        camp_list = self.all().order_by('camp_name')
+        vacancies = [{'camp_name':camp.camp_name, 'vacancies':[]} for camp in camp_list]
+        
+        month_to_check = self.month_days(year, month)
+        
+        for each_day in month_to_check:
+            # indexing by place in ordered camp_list
+            for camp_number in range(len(camp_list)):
+                # getting camp object back from place in list
+                camp = camp_list[camp_number]
+                # using index to find place in vacancies list, targeting dict key with camp name, and adding to the list of days
+                vacancies[camp_number]['vacancies'].append(camp.is_vacant(each_day))
+
+        return (vacancies, month_to_check)
+    
+    def month_days(self, year, month):
+        temp_calendar = calendar.Calendar(firstweekday=6)
+        
+        month_to_check = temp_calendar.itermonthdates(year=int(year), month=int(month))
+        month_to_check = list(month_to_check)
+        
+        simple_month_to_check = [each_day.day for each_day in month_to_check]
+        
+        start_day = simple_month_to_check.index(1)
+        
+        month_to_check = month_to_check[start_day:]
+        simple_month_to_check = simple_month_to_check[start_day:]
+        
+        try:
+            stop_day = simple_month_to_check[1:].index(1)
+        except ValueError:
+            stop_day = len(simple_month_to_check[1:])
+
+        month_to_check = month_to_check[:stop_day+1]
+        
+        return month_to_check
+    
+
 class Camp(models.Model):
+    objects = CampManager()
 
     camp_name = models.CharField(max_length=32)
     sleeps = models.PositiveSmallIntegerField(default=1, help_text="Sleeps how many")
@@ -60,6 +107,11 @@ class Camp(models.Model):
         return self.camp_name
     def get_absolute_url(self):
         return reverse('camp_detail', kwargs={'pk': self.pk})
+    
+    #this function returns boolean of whether a res exists for the camp on the given date
+    def is_vacant(self, date_to_check):
+        return len(ReservationDetail.objects.filter(camps=self.pk, day=date_to_check)) != 0
+
 
 
 ### Reservation Model ###

@@ -1,0 +1,20 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reservation_list' %}">Reservations</a></li>
+    <li><a href="{% url 'reservation_detail' pk=reservation %}">{{ current_reservation.reservation.member.last_name }} #{{ reservation }}</a></li>
+    <li class="active">Guides</li>
+</ol>
+
+<h2>Guides</h2>
+{% for reservation in reservation_list %}
+<ul>
+    {% for guide in reservation.guide.all %}
+    <li>{{ guide }}</li>
+    {% endfor %}
+</ul>
+{% endfor %}
+
+{% endblock %}
