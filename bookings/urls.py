@@ -234,6 +234,8 @@ resdetail_patterns = [
 
 urlpatterns = [
         url(r'^$', views.index, name='index'),
+        url(r'^search/$', views.SearchFormView.as_view(), name='search_form'),
+        url(r'^search-results/$', views.SearchResultsView.as_view(), name='search_results'),
         url(r'^reservation/', include(reservation_patterns)),
         url(r'^member/', include(member_patterns)),
         url(r'^camp/', include(camp_patterns)),
