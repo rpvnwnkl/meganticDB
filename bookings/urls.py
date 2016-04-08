@@ -231,6 +231,18 @@ resdetail_patterns = [
             ),
         ]
 
+make_reservation_patterns = [
+        url(
+            r'^$',
+            views.ReservationFormViewOne.as_view(),
+            name='reservation_step_one',
+            ),
+        url(
+            r'step_two/$',
+            views.ReservationFormViewTwo.as_view(),
+            name='reservation_step_two',
+            ),
+        ]
 
 urlpatterns = [
         url(r'^$', views.index, name='index'),
@@ -241,4 +253,5 @@ urlpatterns = [
         url(r'^camp/', include(camp_patterns)),
         url(r'^guide/', include(guide_patterns)),
         url(r'^resdetail/', include(resdetail_patterns)),
+        url(r'^make-reservation/', include(make_reservation_patterns)),
         ] 

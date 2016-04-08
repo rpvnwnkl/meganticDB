@@ -155,10 +155,11 @@ class ReservationManager(models.Manager):
 class Reservation(models.Model):
     objects = ReservationManager()
 
-    member = models.ForeignKey('Member', on_delete=models.CASCADE)
+    member = models.ForeignKey('Member', on_delete=models.CASCADE, blank=False, null=False) 
     party_size = models.PositiveSmallIntegerField(default=1, help_text="Number of Guests in Party")
-    arrival = models.DateField(default=date.today, help_text="Arrival Date")
-    departure = models.DateField(default=date.today, help_text="Arrival Date")
+    num_beds = models.PositiveSmallIntegerField(default=1, help_text="Number of Beds required")
+    arrival = models.DateField(default=date.today)
+    departure = models.DateField(default=date.today)
     MEAL_CHOICES = (
             ('B', 'Breakfast'),
             ('L', 'Lunch'),
@@ -181,6 +182,7 @@ class Reservation(models.Model):
         return 'Booking #' + str(self.id) + ' - ' + str(self.member) + ' - ' + date
     # Django method modifier
     def save(self, *args, **kwargs):
+        print('saving')
         super(Reservation, self).save(*args, **kwargs)
         # this method call adds ReservationDetail objects and removes extra ones in case of date update
         self.add_details()
@@ -228,9 +230,16 @@ class Reservation(models.Model):
         day_list = [arrival + timedelta(days=each_day) for each_day in range(days_staying + 1)]
         return day_list
 
-    # Django method modifier
+    # Django model method modifier
     def clean(self):
         print('clean method is starting')
+        #cleaned_data = super(Reservation, self).clean()
+        #print(cleaned_data)
+        try:
+            self.member
+        except:
+            raise ValidationError(_('Member required'), code='invalid')
+
         # this validates whether there are existing res for these dates
         day_list = self.days_there(self.arrival, self.departure)
         for each_day in day_list:

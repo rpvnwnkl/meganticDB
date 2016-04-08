@@ -7,7 +7,7 @@ from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
 
 from .models import Reservation
-from .forms import SearchDatesForm
+from .forms import SearchDatesForm, ReservationStepOne
 
 
 import datetime
@@ -43,7 +43,7 @@ class SearchFormView(FormView):
             return super(SearchFormView, self).get(request, *args, **kwargs)
     
     def clean(self):
-        print('\nclean method now startingi\n')
+        print('\nclean method now starting\n')
         cleaned_data = super(SearchDatesForm, self).clean()
         check_in = cleaned_data.get('check_in')
         check_out = cleaned_data.get('check_out')
@@ -70,6 +70,26 @@ class SearchFormView(FormView):
         check_out = data['check_out']
         num_guests = data['guests']
         return Reservation.objects.filter(arrival__gte=check_in, arrival__lte=check_out, departure__lte=check_out, departure__gte=check_in)
+
+##################################
+### Reservation Step-Thru Form ###
+##################################
+
+class ReservationFormViewOne(FormView):
+    form_class = ReservationStepOne
+    template_name = 'bookings/reservation/step_one.html'
+    success_url = 'step_two/'
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            return self.form_valid(form, **kwargs)
+        else:
+            return self.form_invalid(form, **kwargs)
+
+class ReservationFormViewTwo(TemplateView):
+    template_name = 'bookings/reservation/step_two.html'
 
 class SearchResultsView(TemplateView):
     template_name = 'bookings/search_results.html'
