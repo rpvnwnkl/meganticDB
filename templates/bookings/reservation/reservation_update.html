@@ -1,0 +1,77 @@
+{% extends 'bookings/base.html' %}
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Arrival Time</label>
+    {{ reservation_form.arrival }}
+    {% if reservation_form.arrival.errors %}
+        {% for error in reservation_form.arrival.errors %}
+            {{ error|escape }}
+        {% endfor %}
+    {% endif %}
+
+    <label>Departure</label>
+    {{ reservation_form.departure }}
+    {% if reservation_form.departure.errors %}
+        {% for error in reservation_form.departure.errors %}
+            {{ error|escape }}
+        {% endfor %}
+    {% endif %}
+
+    {{ details_formset.management_form }}
+
+    {% for details_form in details_formset %}
+        <div class="details-formset">
+            {{ details_form.cabins }}
+            {% if details_form.cabins.errors %}
+                {% for error in details.form.cabins.errors %}
+                    {{ error|escape }}
+                {% endfor %}
+            {% endif %}
+
+            {{ details_form.eating_breakfast }}
+            {% if details_form.eating_breakfast.errors %}
+                {% for error in details.form.eating_breakfast.errors %}
+                    {{ error|escape }}
+                {% endfor %}
+            {% endif %}
+
+            {{ details_form.eating_lunch }}
+            {% if details_form.eating_lunch.errors %}
+                {% for error in details.form.eating_lunch.errors %}
+                    {{ error|escape }}
+                {% endfor %}
+            {% endif %}
+
+            {{ details_form.eating_dinner }}
+            {% if details_form.eating_dinner.errors %}
+                {% for error in details.form.eating_dinner.errors %}
+                    {{ error|escape }}
+                {% endfor %}
+            {% endif %}
+
+            {{ details_form.num_guides }}
+            {% if details_form.num_guides.errors %}
+                {% for error in details.form.num_guides.errors %}
+                    {{ error|escape }}
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    {% if details_formset.non_form_errors %}
+        {% for error in details_formset.non_form_errors %}
+            {{ error|escape }}
+        {% endfor %}
+    {% endif %}
+
+    <input type="submit" value="Update Reservation" class="button"/>
+</form>
+{% endblock %}

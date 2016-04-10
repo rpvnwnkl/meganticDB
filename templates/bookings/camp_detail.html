@@ -1,0 +1,20 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'camp_list' %}">Camps</a></li>
+    <li class="active">{{ camp.camp_name }}</li>
+</ol>
+
+<h1>{{ camp.camp_name }}</h1>
+{% if camp.sleeps != 1 %}
+<p>Sleeps {{ camp.sleeps }} people.</p>
+{% else %}
+<p>Sleeps {{ camp.sleeps }} person.</p>
+{% endif %}
+<a href="{% url 'camp_update' pk=camp.id %}">Edit</a>
+<a href="{% url 'camp_delete' pk=camp.id %}">Delete</a>
+
+{% endblock %}

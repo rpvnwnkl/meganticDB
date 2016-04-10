@@ -1,0 +1,30 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+{% if form.instance.pk %}
+<h1>Edit Reservation {{ form.instance.pk }}</h1>
+{% else %}
+<h1>New Reservation</h1>
+{% endif %}
+
+<form  method="POST" class="reservation-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+{% if form.instance.pk %}
+    <button type="submit" class="btn btn-lg btn-default" title="save">Save</button>
+    <a href="{% url 'reservation_detail' pk=form.instance.pk %}">
+        <button type="button" class="btn btn-lg btn-danger" title="Cancel">Cancel</button>
+    </a>
+{% elif form.member.value %}
+    <button type="submit" class="btn btn-lg btn-default" title="Submit">Submit</button>
+    <a href="{% url 'member_detail' pk=form.member.value %}">
+        <button type="button" class="button btn-lg btn-danger" title="Cancel">Cancel</button>
+    </a>
+{% else %}
+    <button type="submit" class="btn btn-lg btn-default" title="Submit">Submit</button>
+    <a href="{%url 'reservation_list' %}">
+        <button type="button" class="btn btn-lg btn-danger" title="Cancel">Cancel</button>
+    </a>
+{% endif %}
+</form>
+{% endblock %}

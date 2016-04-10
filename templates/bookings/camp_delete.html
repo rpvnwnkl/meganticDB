@@ -1,0 +1,13 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+
+<h1>Delete Member</h1>
+<p>Are you sure you want to delete the camp {{ camp }}?</p>
+<form action="{% url 'camp_delete' pk=camp.id %}" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Yes, delete." />
+    <a href="{% url 'camp_detail' pk=camp.id %}">No, cancel.</a>
+</form>
+
+{% endblock %}
