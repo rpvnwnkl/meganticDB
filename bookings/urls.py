@@ -1,6 +1,7 @@
 from django.conf.urls import url, include
 
 from . import views
+from . import forms
 
 from . import reservation_views as Res
 from . import member_views as Mem
@@ -235,13 +236,18 @@ make_reservation_patterns = [
         url(
             r'^$',
             views.ReservationFormViewOne.as_view(),
-            name='reservation_step_one',
+            name='make-reservation',
             ),
         url(
             r'step_two/$',
-            views.ReservationFormViewTwo.as_view(),
+            forms.create_res_details,
             name='reservation_step_two',
             ),
+        url(
+            r'update-reservation/$',
+            views.test_reservation_update,
+            name='reservation-update-test',
+            )
         ]
 
 urlpatterns = [

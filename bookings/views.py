@@ -1,13 +1,26 @@
-from django.shortcuts import render
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.urlresolvers import reverse
+from django.db import IntegrityError, transaction
+from django.forms import modelformset_factory
+from django.shortcuts import redirect, render
+
 from django.http import HttpResponse
 from django.template import loader
 from django import forms
 
+from django.utils import timezone
+
 from django.views.generic.edit import FormView
 from django.views.generic.base import TemplateView
 
-from .models import Reservation
-from .forms import SearchDatesForm, ReservationStepOne
+from .models import Reservation, ReservationDetail
+
+from .forms import SearchDatesForm, ReservationStepOne 
+from .forms import DailyDetailsForm, BaseDetailsFormSet, ReservationUpdateForm
+
+
+from . import forms
 
 
 import datetime
@@ -75,6 +88,7 @@ class SearchFormView(FormView):
 ### Reservation Step-Thru Form ###
 ##################################
 
+
 class ReservationFormViewOne(FormView):
     form_class = ReservationStepOne
     template_name = 'bookings/reservation/step_one.html'
@@ -84,12 +98,25 @@ class ReservationFormViewOne(FormView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         if form.is_valid():
-            return self.form_valid(form, **kwargs)
+            reservation = form.save(commit=False)
+            reservation.created_on = timezone.now()
+            reservation.save()
+
+            return forms.create_res_details(request, reservation.pk)
         else:
             return self.form_invalid(form, **kwargs)
-
-class ReservationFormViewTwo(TemplateView):
+'''
+class ReservationFormViewTwo(UpdateView):
     template_name = 'bookings/reservation/step_two.html'
+    form_class = ReservationStepTwo
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            reservationdetail = form.save(commit=False)
+            #if not reservationdetail.is_last_day:
+'''
 
 class SearchResultsView(TemplateView):
     template_name = 'bookings/search_results.html'
@@ -139,3 +166,90 @@ def day_archive(request, year, month, day):
             }
     return render(request, 'bookings/day_archive.html', context)
 
+
+#################################
+###   test_reservation_update ###
+#################################
+
+def test_reservation_update(request):
+    """
+    Allows user to update reservation details
+    """
+    reservation = request.GET['reservation']
+
+    # Create the formset, specifying the form and formset we want to use
+    DetailsFormSet = modelformset_factory(
+                            ReservationDetail, 
+                            fields=(
+                                'camps', 
+                                'num_guides', 
+                                'eating_breakfast', 
+                                'eating_lunch', 
+                                'eating_dinner',
+                                ),
+                            formset=BaseDetailsFormSet,
+                            )
+
+    # Get our existing data for this reservation. This is used as initial data
+    reservation_details = ReservationDetail.objects.filter(reservation=reservation).order_by('day_reserved')
+    detail_data = [(0,
+            {
+                'camps': d.camps, 
+                'eating_breakfast': d.eating_breakfast, 
+                'eating_lunch': d.eating_lunch, 
+                'eating_dinner': d.eating_dinner, 
+                'num_guides': d.num_guides,
+                }) 
+            for d in reservation_details
+            ]
+    print(detail_data[0][1])
+    if request.method == 'POST':
+        reservation_form = ReservationUpdateForm(request.POST, initial={'reservation':reservation})
+        details_formset = DailyDetailsForm(request.POST)
+
+        if reservation_form.is_valid() and link_formset.is_valid():
+            # save info
+            reservation.arrival = reservation_form.cleaned_data.get('arrival')
+            reservation.departure = reservation_form.cleaned_data.get('departure')
+            reservation.save()
+
+            # now save details data for each formset
+            new_details = []
+
+            for details_form in details_formset:
+                camps = details_form.cleaned_data.get('camps')
+                eating_breakfast = details_form.cleaned_data.get('eating_breakfast')
+                eating_lunch = details_form.cleaned_data.get('eating_lunch')
+                eating_dinner = details_form.cleaned_data.get('eating_dinner')
+                num_guides = details_form.cleaned_data.get('num_guides')
+
+                new_details.append(
+                        ReservationDetail(
+                            camps=camps, 
+                            eating_breakfast=eating_breakfast, 
+                            eating_lunch=eating_lunch, 
+                            eating_dinner=eating_dinner, 
+                            num_guides=num_guides
+                            ))
+            try:
+                with transaction.atomic():
+                #replace old with new
+                    ReservationDetail.objects.filter(reservation=reservation).delete()
+                    ReservationDetail.objects.bulk_create(new_details)
+
+                    # and notify it worked
+                    messages.success(request, 'You have updated the Reservation Details.')
+            except IntegrityError: # if transaction fails
+                messages.error(request, 'There was an error in saving the reservation  updates ')
+                return redirect(reverse('reservation_detail'))
+
+    else:
+        reservation_form = ReservationUpdateForm(initial={'reservation':reservation})
+        details_formset = DailyDetailsForm(initial=detail_data[0][1])
+
+    context = {
+        'reservation_form': reservation_form,
+        'details_formset': details_formset,
+        }
+    print(context)
+    return render(request, 'bookings/reservation/reservation_update.html', context)

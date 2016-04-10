@@ -21,16 +21,16 @@ class CampDetailInline(admin.TabularInline):
 
 class ReservationAdmin(admin.ModelAdmin):
     fieldsets = [
-            ('Member Info', {'fields': ['member', 'party_size']}),
-            ('Logistics', {'fields': ['arrival', 'departure', 'first_meal', 'last_meal']}),
+            ('Member Info', {'fields': ['member']}),
+            ('Logistics', {'fields': ['arrival', 'departure']}),
             ]
     #inlines = [SpecificInline]
     list_display = ('member', 'id', 'arrival')
     list_filter = ['arrival']
 
 class DetailAdmin(admin.ModelAdmin):
-    list_display = ('day', 'id', 'reservation')
-    list_filter = ['day']
+    list_display = ('day_reserved', 'id', 'reservation')
+    list_filter = ['day_reserved']
     inlines = [CampDetailInline]
     admin_order_field = 'reservation__id'
 

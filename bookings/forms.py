@@ -1,5 +1,10 @@
 from django import forms
 from django.forms import ModelForm
+from django.forms import modelformset_factory
+from django.shortcuts import render
+from django.forms.models import BaseModelFormSet
+
+from bookings.models import ReservationDetail
 
 from bookings.models import Reservation
 
@@ -37,4 +42,40 @@ class ReservationStepOne(ModelForm):
         cleaned_data = super(ReservationStepOne, self).clean()
         return cleaned_data
 
+class ReservationStepTwo(ModelForm):
+    class Meta:
+        model = ReservationDetail
+        fields = ['num_guests', 'num_beds_required', 'num_guides_required', 'eating_breakfast', 'eating_lunch', 'eating_dinner']
+
+def create_res_details(request, respk):
+    ReservationDetailFormSet = modelformset_factory(ReservationDetail, fields=('num_guests', 'num_beds_required', 'num_guides_required', 'eating_breakfast', 'eating_lunch', 'eating_dinner'))
+    if request.method == "POST":
+        print(request.POST)
+        formset = ReservationDetailFormSet(request.POST, request.FILES, queryset=ReservationDetail.objects.filter(reservation=respk))
+        if formset.is_valid():
+            formset.save()
+    else:
+        print(request.POST)
+        formset = ReservationDetailFormSet(queryset=ReservationDetail.objects.filter(reservation=respk))
+    return render(request, 'reservation/reservation_details.html', {'formset': formset})
+
+
+#class NewReservationDetailFormSet(BaseModelFormSet):
+    
+class DailyDetailsForm(ModelForm):
+    class Meta:
+        model = ReservationDetail
+        fields = ['camps', 'eating_breakfast', 'eating_lunch', 'eating_dinner', 'num_guides']
+
+class ReservationUpdateForm(ModelForm):
+    class Meta:
+        model = Reservation
+        fields = ['arrival', 'departure']
+
+class BaseDetailsFormSet(BaseModelFormSet):
+    def clean(self):
+        # custom validation
+
+        if any(self.errors):
+            return
 

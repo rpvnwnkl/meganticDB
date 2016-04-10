@@ -115,7 +115,7 @@ class Camp(models.Model):
     objects = CampManager()
 
     camp_name = models.CharField(max_length=32)
-    sleeps = models.PositiveSmallIntegerField(default=1, help_text="Sleeps how many")
+    num_beds = models.PositiveSmallIntegerField(default=1, help_text="Number of beds")
 
     def __str__(self):
         return self.camp_name
@@ -124,22 +124,25 @@ class Camp(models.Model):
     
     #this function returns boolean of whether a res exists for the camp on the given date
     def is_vacant(self, date_to_check):
-        return len(ReservationDetail.objects.filter(camps=self.pk, day=date_to_check)) != 0
+        return len(ReservationDetail.objects.filter(camps=self.pk, day_reserved=date_to_check)) != 0
 
 class CampDetail(models.Model):
     
     reservation = models.ForeignKey('Reservation', on_delete=models.CASCADE)
     reservation_detail = models.ForeignKey('ReservationDetail', on_delete=models.CASCADE)
     camp = models.ManyToManyField('Camp')
-    number_sleeping = models.PositiveSmallIntegerField(default=1, help_text="How many here tonight?")
-    
+    num_guests_staying = models.PositiveSmallIntegerField(default=1, help_text="Number of guests staying here")
+    num_beds_used = models.PositiveSmallIntegerField(default=1, help_text="Number of beds being used")
     def save(self, *args, **kwargs):
         if self.id == None:
             super(CampDetail, self).save(*args, **kwargs)
     def capacity(self):
-        return self.camp.sleeps
+        return self.camp.num_beds
 
+
+#########################
 ### Reservation Model ###
+#########################
 
 class ReservationManager(models.Manager):
     def month_archive(self, year, month):
@@ -147,7 +150,7 @@ class ReservationManager(models.Manager):
         return in_month
     def day_archive(self, year, month, day):
         day_to_search = date(year, month, day)
-        valid_reservations = self.filter(reservationdetail__day=day_to_search)
+        valid_reservations = self.filter(reservationdetail__day_reserved=day_to_search)
         return valid_reservations
  
    
@@ -156,19 +159,19 @@ class Reservation(models.Model):
     objects = ReservationManager()
 
     member = models.ForeignKey('Member', on_delete=models.CASCADE, blank=False, null=False) 
-    party_size = models.PositiveSmallIntegerField(default=1, help_text="Number of Guests in Party")
-    num_beds = models.PositiveSmallIntegerField(default=1, help_text="Number of Beds required")
+    #party_size = models.PositiveSmallIntegerField(default=1, help_text="Number of Guests in Party")
+    #num_beds = models.PositiveSmallIntegerField(default=1, help_text="Number of Beds required")
     arrival = models.DateField(default=date.today)
     departure = models.DateField(default=date.today)
-    MEAL_CHOICES = (
-            ('B', 'Breakfast'),
-            ('L', 'Lunch'),
-            ('D', 'Dinner'),
-            )
+    #MEAL_CHOICES = (
+     #       ('B', 'Breakfast'),
+      #      ('L', 'Lunch'),
+       #     ('D', 'Dinner'),
+        #    )
     
-    first_meal = models.CharField('First meal at camp', max_length=1, choices=MEAL_CHOICES, default='LUNCH', help_text="First Meal")
+    #first_meal = models.CharField('First meal at camp', max_length=1, choices=MEAL_CHOICES, default='LUNCH', help_text="First Meal")
     
-    last_meal = models.CharField('Last meal at camp', max_length=1, choices=MEAL_CHOICES, default='LUNCH', help_text="Last Meal")
+    #last_meal = models.CharField('Last meal at camp', max_length=1, choices=MEAL_CHOICES, default='LUNCH', help_text="Last Meal")
     
     created_on = models.DateTimeField(auto_now_add=True)
     edited_on = models.DateTimeField(auto_now=True)
@@ -192,24 +195,24 @@ class Reservation(models.Model):
     def add_details(self):
         day_list = self.days_there(self.arrival, self.departure)
         for each_day in day_list:
-            if not ReservationDetail.objects.filter(day=each_day, reservation=self):
+            if not ReservationDetail.objects.filter(day_reserved=each_day, reservation=self):
                 if each_day == day_list[0]:
                     # this is the first day of stay
                     ReservationDetail.objects.create(
                             reservation=self, 
-                            day=each_day, 
+                            day_reserved=each_day, 
                             is_first_day=True)
                 elif each_day == day_list[-1]:
                     # this is the last day
                     ReservationDetail.objects.create(
                             reservation=self,
-                            day=each_day,
+                            day_reserved=each_day,
                             is_last_day=True)
                 else:
                     # all the other days
                     ReservationDetail.objects.create(
                             reservation=self,
-                            day=each_day)
+                            day_reserved=each_day)
         # in case of updated entry:
         self.remove_extra_details()
         return
@@ -217,9 +220,9 @@ class Reservation(models.Model):
     # backup to add details method
     def remove_extra_details(self):
         #this pulls up the reservation details in a queryset and deletes those outside of arrival - departure
-        the_details = ReservationDetail.objects.filter(reservation=self).order_by('day')
-        deleted_items = the_details.filter(day__lt=self.arrival).delete()
-        deleted_items2 = the_details.filter(day__gt=self.departure).delete()
+        the_details = ReservationDetail.objects.filter(reservation=self).order_by('day_reserved')
+        deleted_items = the_details.filter(day_reserved__lt=self.arrival).delete()
+        deleted_items2 = the_details.filter(day_reserved__gt=self.departure).delete()
         print(deleted_items, deleted_items2)
         return
 
@@ -244,7 +247,7 @@ class Reservation(models.Model):
         day_list = self.days_there(self.arrival, self.departure)
         for each_day in day_list:
             if ReservationDetail.objects.filter(
-                    day=each_day,
+                    day_reserved=each_day,
                     reservation__member=self.member,
                     ).exclude(reservation__pk=self.pk):
                 raise ValidationError(
@@ -259,6 +262,12 @@ class Reservation(models.Model):
     class Meta:
         ordering = ['arrival']
 
+
+
+###########################
+### Reservation DETAILS ###
+###########################
+
 class ReservationDetailManager(models.Manager):
     
     pass
@@ -266,15 +275,21 @@ class ReservationDetailManager(models.Manager):
 class ReservationDetail(models.Model):
 
     objects = ReservationDetailManager()
-    reservation = models.ForeignKey('Reservation', on_delete=models.CASCADE, unique_for_date='day')
-    day = models.DateField()
-    #camps = models.ManyToManyField('Camp')
-    #guides = models.ManyToManyField('Guide')
+    reservation = models.ForeignKey('Reservation', on_delete=models.CASCADE, unique_for_date='day_reserved')
+    camps = models.ManyToManyField('Camp', unique_for_date='day_reserved')
+    num_guides = models.PositiveSmallIntegerField(default=0)
+    day_reserved = models.DateField()
     is_first_day = models.BooleanField(default=False)
     is_last_day = models.BooleanField(default=False)
+    eating_breakfast = models.BooleanField(default=True)
+    eating_lunch = models.BooleanField(default=True)
+    eating_dinner = models.BooleanField(default=True)
+    num_guests = models.PositiveSmallIntegerField(default=1, help_text="Number of guests")
+    num_beds_required = models.PositiveSmallIntegerField(default=1, help_text="Number of beds required")
+    num_guides_required = models.PositiveSmallIntegerField(default=1, help_text="Number of guides requested")
 
     def __str__(self):
-        return self.day.strftime('%x')
+        return self.day_reserved.strftime('%x')
 
     def save(self, *args, **kwargs):
         if self.id == None:

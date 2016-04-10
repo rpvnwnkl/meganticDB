@@ -24,7 +24,7 @@ class ReservationCreate(CreateView):
     model = Reservation
     #form_class = ReservationForm
     template_name = 'bookings/reservation_edit.html'
-    fields =['member', 'party_size', 'arrival', 'departure', 'first_meal', 'last_meal']
+    fields =['member','arrival', 'departure']
 
     def get_initial(self):
         # this helps prepopulate the form based on presence of pk
@@ -39,7 +39,7 @@ class ReservationCreate(CreateView):
 class ReservationUpdate(UpdateView):
     model = Reservation
     template_name = 'bookings/reservation_edit.html'
-    fields = ['member', 'party_size', 'arrival', 'departure', 'first_meal', 'last_meal']
+    fields = ['member', 'arrival', 'departure']
 
 class ReservationDelete(DeleteView):
     model = Reservation
