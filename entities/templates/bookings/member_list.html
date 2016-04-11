@@ -1,0 +1,14 @@
+{% extends 'bookings/base.html' %}
+{% block content %}
+<h1>Members</h1>
+<a href="{% url 'member_new' %}">New</a>
+<ul>
+    {% for member in member_list %}
+    <li>
+        <a href="{% url 'member_detail' pk=member.pk %}">
+        {{ member.full_name }}
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

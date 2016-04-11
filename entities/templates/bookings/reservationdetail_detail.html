@@ -1,0 +1,51 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+
+<table>
+    <tr>
+        <td><h1>{{ resdetail }}</h1></td>
+        <td>
+            <form method="LINK" action="{% url 'resdetail_new' %}">
+                <input type="submit" value="New"/>
+            </form>
+        </td>
+        <td>
+            <form method="LINK" action="{% url 'resdetail_update' pk=resdetail.id %}">
+                <input type="submit" value="Edit"/>
+            </form>
+        </td>
+        <td>
+            <form method="LINK" action="{% url 'resdetail_delete' pk=resdetail.id %}">
+                <input type="submit" value="Delete"/>
+            </form>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td><h2>Reservations</h2></td>
+        <td>
+            <form method="LINK" action="{% url 'reservation_new' pk=resdetail.id%}">
+                <input type="submit" value="New"/>
+            </form>
+        </td>
+        <td>
+            <form method="LINK" action="{% url 'reservation_list' %}">
+                <input type="submit" value="All"/>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<ul>
+    {% for reservation in reservations %}
+    <li>
+    <a href="{% url 'reservation_detail' pk=reservation.pk %}">
+        {{ reservation.arrival }} - {{ reservation.departure }}
+    </a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

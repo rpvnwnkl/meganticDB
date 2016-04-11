@@ -1,0 +1,15 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+<h1>New Reservation Detail</h1>
+<form  method="POST" class="reservation-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="OK">
+
+</form>
+<form method="LINK" action="{% url 'resdetail_list' %}">
+    <input type="submit" value="Cancel">
+</form>
+
+{% endblock %}

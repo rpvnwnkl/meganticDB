@@ -1,0 +1,26 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'guide_list' %}">Guides</a></li>
+    <li class="active">{{ guide.initial_name }}</li>
+</ol>
+
+<h1>{{ guide.full_name }}</h1>
+<a href="{% url 'guide_update' pk=guide.id %}">Edit</a>
+<a href="{% url 'guide_delete' pk=guide.id %}">Delete</a>
+<h2>Reservations</h2> 
+
+
+<ul>
+    {% for reservation in reservations %}
+    <li>
+    <a href="{% url 'reservation_detail' pk=reservation.pk %}">
+        {{ reservation.arrival }} - {{ reservation.departure }}
+    </a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reservation_list' %}">Reservations</a></li>
+    <li class="active">{{ reservation.member.last_name }} #{{ reservation.id }}</li>
+</ol>
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <a href="{% url 'reservation_update' pk=reservation.id %}" role="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="edit"></span>
+        </a>
+        <a href="{% url 'reservation-update-test' reservation=reservation.id %}" role="button" class="btn btn-info">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="edit"></span>
+        </a>
+        <a href="{% url 'reservation_delete' pk=reservation.id %}" role="button" class="btn btn-danger">
+            <span class="glyphicon glyphicon-trash" aria-hidden="true" title="delete"></span>
+        </a>
+        <h1 class="panel-title">
+            <a href="{% url 'member_detail' pk=reservation.member.pk %}">{{ reservation.member.full_name }}
+            </a>
+        </h1>
+    </div>
+    <div class="panel-body">
+        <p>Party of {{ reservation.party_size }}</p>
+        <p>Arrival: {{ reservation.arrival }} before {{ reservation.get_first_meal_display }}</p>
+        <p>Departure: {{ reservation.departure }} after {{ reservation.get_last_meal_display }}</p>
+        <a href="{% url 'camp_reservation' reservation=reservation.pk %}" role="button" class="btn btn-warning">Camps</a>
+        <a href="{% url 'guide_detail_reservation' pk=reservation.pk %}" role="button" class="btn btn-success">Guides</a>
+    </div>
+</div>
+
+{% endblock %}

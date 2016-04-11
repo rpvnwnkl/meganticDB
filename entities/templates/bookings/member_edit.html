@@ -1,0 +1,22 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+{% if form.instance.pk %}
+<h1>Edit Member</h1>
+{% else %}
+<h1>New Member</h1>
+{% endif %}
+
+<form  method="POST" class="member-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+<button type="submit" class="btn btn-lg btn-default" title="Submit">Submit</button>
+{% if form.instance.pk %}
+    <a href="{% url 'member_detail' pk=form.instance.pk %}" type="button" class="btn btn-lg btn-danger" title="Cancel">Cancel</a>
+{% elif form.member.value %}
+    <a href="{% url 'member_detail' pk=form.member.value %}" type="button" class="button btn-lg btn-danger" title="Cancel">Cancel</a>
+{% else %}
+    <a href="{%url 'member_list' %}" type="button" class="btn btn-lg btn-danger" title="Cancel">Cancel</a>
+{% endif %}
+</form>
+{% endblock %}

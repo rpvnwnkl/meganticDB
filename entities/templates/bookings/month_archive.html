@@ -1,0 +1,19 @@
+{% if month_entries %}
+<table style="width:100%">
+    <caption><h2>All Reservations from {{ month }}, {{ year}}</h2></caption>
+    <tr>
+        <th>Member Name</th>
+        <th>Arrival Date</th>
+        <th>Departure Date</th>
+    </tr>
+{% for booking in month_entries %}
+    <tr>
+        <td>{{ booking.member }}</td>
+        <td>{{ booking.arrival }}</td>
+        <td>{{ booking.departure }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% else %}
+<p>***  No entries for {{ month }}, {{ year }}  ***</p>
+{% endif %}

@@ -1,0 +1,19 @@
+{% if year_entries %}
+<table style="width:100%">
+    <caption><h2>All Reservations from {{ year}}</h2></caption>
+    <tr>
+        <th>Member Name</th>
+        <th>Arrival Date</th>
+        <th>Departure Date</th>
+    </tr>
+{% for booking in year_entries %}
+    <tr>
+        <td>{{ booking.member }}</td>
+        <td>{{ booking.arrival }}</td>
+        <td>{{ booking.departure }}</td>
+    </tr>
+{% endfor %}
+</table>
+{% else %}
+<p>***  No entries for {{ year }}  ***</p>
+{% endif %}

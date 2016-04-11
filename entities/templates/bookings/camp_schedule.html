@@ -1,0 +1,52 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="btn-group" role="group" aria-label="...">
+                    <a href="{% url 'camp_month_schedule' year previous_month|date:"m" %}" class="btn btn-default" type="button">
+                        <span class="glyphicon glyphicon-arrow-left" aria-label="previous month"></span>
+                    </a>
+                    <a href="{% url 'camp_month_schedule' year next_month|date:"m" %}" class="btn btn-default" type="button">
+                        <span class="glyphicon glyphicon-arrow-right" aria-label="next month"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>{{ current_month|date:"F" }} {{ current_month|date:"o" }}</th>
+                    {% for each_day in month_days %}
+                        <th>{{ each_day|date:"j" }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for camp in camp_list %}
+                    <tr>
+                        <td>{{ camp.camp_name }}</td>
+                        {% for each_day in camp.vacancies %}
+                            {% if each_day %}
+                                <td class="danger">
+                                    <span class="glyphicon glyphicon-ban-circle" aria-hidden="true" aria-label="Booked"></span>
+                                </td>
+                            {% else %}
+                                <td class="success">
+                                    <span class="glyphicon glyphicon-ok" aria-hidden="true" aria-label="Vacant"></span>
+                                </td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+ </div>
+
+
+
+{% endblock %}

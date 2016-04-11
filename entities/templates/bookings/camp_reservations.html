@@ -1,0 +1,28 @@
+{% extends 'bookings/base.html' %}
+
+{% block content %}
+<ol class="breadcrumb">
+    <li><a href="/">Home</a></li>
+    <li><a href="{% url 'reservation_list' %}">Reservations</a></li>
+    <li><a href="{% url 'reservation_detail' pk=reservation %}">{{ current_reservation.reservation.member.last_name }} #{{ reservation }}</a></li>
+    <li class="active">Camps</li>
+</ol>
+<h2>Camps</h2>
+
+
+{% for reservation in reservation_list %}
+<h3>{{ reservation.day }}</h3>
+<a href="#" role="button" class="btn-sm btn-info">
+    <span class="glyphicon glyphicon-pencil" aria-hidden="true" title="edit"></span>
+</a>
+<a href="" role="button" class="btn-sm btn-warning">
+    <span class="glyphicon glyphicon-trash" aria-hidden="true" title="delete"></span>
+</a>
+<ul>
+    {% for camp in reservation.camps.all %}
+    <li>{{ camp }}</li>
+    {% endfor %}
+</ul>
+{% endfor %}
+
+{% endblock %}
