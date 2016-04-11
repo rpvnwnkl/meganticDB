@@ -39,14 +39,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'entities.apps.EntitiesConfig',
     'reservations.apps.ReservationsConfig',
+    'taggit',
+    'calendarium',
     #'bookings.apps.BookingsConfig',
     #'booking.apps.BookingConfig',
     'object_events',
     'filer',
     'mptt',
     'easy_thumbnails',
-    'calendarium',
     ]
+
+# Taggit App Settings
+TAGGIT_CASE_INSENSITIVE = True
+
+
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
