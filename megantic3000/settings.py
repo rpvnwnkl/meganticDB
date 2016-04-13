@@ -31,27 +31,33 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    'admin_views',
+    'django.contrib.admin.apps.AdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'entities.apps.EntitiesConfig',
     'reservations.apps.ReservationsConfig',
     'taggit',
-    'calendarium',
+    'events.apps.EventsConfig',
+    
+    #'calendarium',
     #'bookings.apps.BookingsConfig',
     #'booking.apps.BookingConfig',
-    'object_events',
-    'filer',
-    'mptt',
-    'easy_thumbnails',
+    #'object_events',
+    #'filer',
+    #'mptt',
+    #'easy_thumbnails',
     ]
 
 # Taggit App Settings
 TAGGIT_CASE_INSENSITIVE = True
 
+# sites framework info
+SITE_ID = 1
 
 
 MIDDLEWARE_CLASSES = [
@@ -70,7 +76,7 @@ ROOT_URLCONF = 'megantic3000.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],#os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -132,5 +138,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
-
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+
+

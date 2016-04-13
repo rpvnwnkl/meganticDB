@@ -7,7 +7,7 @@ from . import models
 class BookingAdmin(admin.ModelAdmin):
     list_display = [
         'creation_date',
-        'booking_id', 
+        #'booking_id', 
         'member',
         'arrival', 
         'departure',

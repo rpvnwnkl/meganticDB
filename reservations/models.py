@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from calendarium.models import Event
+#from calendarium.models import Event
 from taggit.managers import TaggableManager
 #from hvad.models import TranslatableModel, TranslatedFields
 #from international.models import countries
@@ -13,7 +13,7 @@ from taggit.managers import TaggableManager
 
 
 
-class Booking(Event):
+class Booking(models.Model):
     """
     Model to contain information about a booking.
 
@@ -75,7 +75,7 @@ class Booking(Event):
         blank=True, null=True,
     )
 
-    creatin_date = models.DateTimeField(
+    creation_date = models.DateTimeField(
         verbose_name=_('Creation date'),
         auto_now_add=True,
     )

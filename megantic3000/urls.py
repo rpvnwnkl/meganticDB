@@ -14,12 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+#from django.conf.urls.defaults import *
 from django.contrib import admin
 
+from django.conf import settings
+from django.conf.urls.static import static
+admin.autodiscover()
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    #url(r'', include('django.contrib.auth.urls')),
     url(r'^entities/', include('entities.urls')),
     url(r'^booking/', include('reservations.urls')),
-    url(r'^notifications/', include('object_events.urls')),
-    url(r'^calendar/', include('calendarium.urls')),
-]
+    #url(r'^notifications/', include('object_events.urls')),
+    #url(r'^calendar/', include('calendarium.urls')),
+    url(r'^events/', include('events.urls')),
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
